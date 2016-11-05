@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="D:\workdir\LedwayFlow\app\libs\commons-httpclient-3.0.1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="d6364bcc1b2b2aa69d008602d36a700453648560">
+        <dex dex="D:\workdir\LedwayFlow\app\build\intermediates\pre-dexed\debug\commons-httpclient-3.0.1_584dde59091ff8c5bdcf236a442c43a16ba99021.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="D:\workdir\LedwayFlow\app\libs\httpclient-4.1.3.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="a260d242a42d8ccaec0c410084f9b62d47a7c2c5">
+        <dex dex="D:\workdir\LedwayFlow\app\build\intermediates\pre-dexed\debug\httpclient-4.1.3_23b178bae6ca4c367a3179d587750ab171cbff92.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="D:\workdir\LedwayFlow\app\libs\dom4j-1.6.1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.0"
+        sha1="5d3ccc056b6f056dbf0dddfdf43894b9065a8f94">
+        <dex dex="D:\workdir\LedwayFlow\app\build\intermediates\pre-dexed\debug\dom4j-1.6.1_811d930c2969414bb8a2b52d6cf114a71acf01ab.jar" />
+    </item>
+
+</items>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Server Address" />
+
+    <EditText
+        android:id="@+id/srvAddress"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10" />
+
+   <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+                android:layout_width="fill_parent" 
+                android:layout_height="wrap_content" 
+                android:padding="10px"> 
+
+     <RelativeLayout
+         xmlns:android="http://schemas.android.com/apk/res/android"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerHorizontal="true"
+         以便进行水平居中处理=""
+         在edittext下面=""
+         必须为wrap_content=""
+         表示两个button作为一个整体=""
+         这样才能表示宽度只包含两个button="" >
+
+     <Button
+         android:id="@+id/btnSaveSetting"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_marginRight="50px"
+         android:text="Save" />
+
+    <Button
+        android:id="@+id/btnCancelSetting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btnSaveSetting"
+        android:layout_toRightOf="@+id/btnSaveSetting"
+        android:text="Cancel" />
+ 
+  </RelativeLayout> 
+</RelativeLayout>
+</LinearLayout>

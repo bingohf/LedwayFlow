@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, LedwayWorkflowActivity!</string>
+    <string name="app_name">Ledway Workflow</string>
+    <string name="worklist">My List</string>
+    <string name="workNo">申请单号</string>
+    <string name="FEFORMNAME">申请类别</string>
+    <string name="FEMNAME">申请人</string>
+    <string name="FSTARTDATE">申请时间</string>
+    <string name="CANUSE">可用额度</string>
+    <string name="PDFURL">单据</string>
+    
+
+</resources>
