@@ -1,5 +1,6 @@
 package com.ledway;
 
+import android.support.v7.app.AppCompatActivity;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class LedwayWorkflowActivity extends Activity implements
+public class LedwayWorkflowActivity extends AppCompatActivity implements
 		DialogInterface.OnKeyListener, Runnable, OnClickListener,
 		DialogInterface.OnDismissListener {
 	/** Called when the activity is first created. */

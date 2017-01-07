@@ -1,5 +1,7 @@
 package com.ledway;
 
+import android.support.v7.app.AppCompatActivity;
+import android.widget.AdapterView;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,8 +33,8 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-public class WorklistActivity extends ListActivity implements Runnable,
-		OnClickListener, DialogInterface.OnKeyListener,DialogInterface.OnDismissListener  {
+public class WorklistActivity extends AppCompatActivity implements Runnable,
+		OnClickListener, DialogInterface.OnKeyListener,DialogInterface.OnDismissListener ,AdapterView.OnItemClickListener {
 	private final int UPDATE_SHOWTEXT = 1;
 	private final int UPDATE_DISSMIS = 2;
 	private List list = new ArrayList<Map>();
@@ -43,10 +45,13 @@ public class WorklistActivity extends ListActivity implements Runnable,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_worklist);
 		adp = new SimpleAdapter(this, list,
 				android.R.layout.simple_list_item_1,
 				new String[] { "LIST_TITLE" }, new int[] { android.R.id.text1 });
-		setListAdapter(adp);
+		ListView listView = (ListView) findViewById(R.id.list_view);
+		listView.setAdapter(adp);
+		listView.setOnItemClickListener(this);
 
 	}
 
@@ -179,7 +184,8 @@ public class WorklistActivity extends ListActivity implements Runnable,
 
 		}
 	}
-	protected void onListItemClick(ListView l, View v, int position, long id) {
+
+	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 		System.out.println(position);
 		Intent intent = new Intent(this,WorkItem.class);
 		Bundle extras = new Bundle();

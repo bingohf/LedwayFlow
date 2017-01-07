@@ -1,5 +1,9 @@
 package com.ledway;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.PowerManager;
+import android.support.v7.app.AppCompatActivity;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +20,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.io.FileUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 
@@ -37,8 +42,14 @@ import android.widget.EditText;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
-public class WorkItem extends Activity implements OnClickListener, Runnable,
+public class WorkItem extends AppCompatActivity implements OnClickListener, Runnable,
 		DialogInterface.OnKeyListener, DialogInterface.OnDismissListener {
 	private final int UPDATE_SHOWTEXT = 1;
 	private final int UPDATE_DISSMIS = 2;
@@ -54,7 +65,9 @@ public class WorkItem extends Activity implements OnClickListener, Runnable,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.workitem);
+
 		Intent intent = getIntent();
+
 		map = (HashMap<String, String>) intent.getSerializableExtra("data");
 		((TextView) findViewById(R.id.FEFORMNO)).setText(map.get("FEFORMNO"));
 		((TextView) findViewById(R.id.CANUSE)).setText(map.get("CANUSE"));
@@ -71,7 +84,7 @@ public class WorkItem extends Activity implements OnClickListener, Runnable,
 		btnReject.setOnClickListener(this);
 		Button button = (Button) findViewById(R.id.btnPDF);
 		button.setOnClickListener(this);
-
+		getSupportActionBar().setTitle(map.get("FEFORMNO"));
 	}
 
 	@Override
@@ -91,76 +104,66 @@ public class WorkItem extends Activity implements OnClickListener, Runnable,
 		// startActivity(intent);
 		switch (v.getId()) {
 			case R.id.btnPDF: {
-				thread = new Thread(new Runnable() {
 
-					public void run() {
-						// TODO Auto-generated method stub
-						String urlStr = map.get("PDFURL");
-						String path = "file";
-						String fileName = System.currentTimeMillis() +".pdf";
-						String SDCard = Environment.getExternalStorageDirectory() + "";
-						String pathName = SDCard + "/" + path + "/" + fileName;// 文件存储路径
-						OutputStream output = null;
-						try {
-						/*
-						 * 通过URL取得HttpURLConnection 要网络连接成功，需在AndroidMainfest.xml中进行权限配置
-						 * <uses-permission android:name="android.permission.INTERNET"
-						 * />
-						 */
-							URL url = new URL(urlStr);
-							HttpURLConnection conn = (HttpURLConnection) url
-									.openConnection();
-
-							File file = new File(pathName);
-							InputStream input = conn.getInputStream();
-							if (file.exists()) {
-								System.out.println("exits");
-								return;
-							} else {
-								String dir = SDCard + "/" + path;
-								new File(dir).mkdir();// 新建文件夹
-								file.createNewFile();// 新建文件
-								output = new FileOutputStream(file);
-								// 读取大文件
-								byte[] buffer = new byte[4];
-								while (input.read(buffer) != -1) {
-									output.write(buffer);
-								}
-								output.flush();
-							}
-							conn.disconnect();
-							intent = new Intent("android.intent.action.VIEW");
-							intent.addCategory("android.intent.category.DEFAULT");
-							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							Uri uri = Uri.fromFile(new File(pathName));
-							intent.setDataAndType(uri, "application/pdf");
-							// Uri uri = Uri.parse(map.get("PDFURL"));
-							// Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-
-							//startActivity(intent);
-							mHandler.sendEmptyMessage(UPDATE_START);
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						} finally {
-							try {
-								output.close();
-								System.out.println("success");
-								mHandler.sendEmptyMessage(UPDATE_DISSMIS);
-							} catch (IOException e) {
-								System.out.println("fail");
-								e.printStackTrace();
-							}
-						}
-					}
-				});
 
 				mydialog = ProgressDialog.show(this, "请稍等...", "Loading...", true);
-				mydialog.setOnKeyListener(this);
-				mydialog.setOnDismissListener(this);
-				thread.start();
 
+
+				final Subscription subscription =
+						Observable.just(map.get("PDFURL"))
+								.flatMap(new Func1<String, Observable<File>>() {
+									public Observable<File> call(final String url) {
+										return Observable.create(new Observable.OnSubscribe<File>() {
+											public void call(Subscriber<? super File> subscriber) {
+												String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() +"/file/" + System.currentTimeMillis() +".pdf";
+												File outFile = new File(fileName);
+												outFile.getParentFile().mkdirs();
+												try {
+													FileUtils.copyURLToFile(new URL(url),outFile);
+													subscriber.onNext(outFile);
+													subscriber.onCompleted();
+												} catch (IOException e) {
+													e.printStackTrace();
+													subscriber.onError(e);
+												}
+											}
+										});
+
+									}
+								})
+								.subscribeOn(Schedulers.io())
+								.observeOn(AndroidSchedulers.mainThread())
+								.subscribe(new Subscriber<File>() {
+									public void onCompleted() {
+										mydialog.dismiss();
+									}
+
+									public void onError(Throwable e) {
+										Log.e("error", e.getMessage(), e);
+										Toast.makeText(WorkItem.this, e.getMessage(), Toast.LENGTH_LONG).show();
+										mydialog.dismiss();
+									}
+
+									public void onNext(File file) {
+										Toast.makeText(WorkItem.this, file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+										Intent intent = new Intent(WorkItem.this, PDFViewerActivity.class);
+										intent.putExtra("pdf_file_uri", file.getAbsolutePath());
+										startActivity(intent);
+									}
+								});
+				mydialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+					public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+						if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK){
+							subscription.unsubscribe();
+						}
+						return false;
+					}
+				});
+				mydialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+					public void onDismiss(DialogInterface dialogInterface) {
+						subscription.unsubscribe();
+					}
+				});
 				break;
 			}
 			case R.id.btnApprove: {
@@ -287,4 +290,5 @@ public class WorkItem extends Activity implements OnClickListener, Runnable,
 		}
 
 	}
+
 }
