@@ -155,6 +155,7 @@ public class WorkItem extends AppCompatActivity implements OnClickListener, Runn
 					public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
 						if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK){
 							subscription.unsubscribe();
+							mydialog.dismiss();
 						}
 						return false;
 					}
@@ -162,6 +163,7 @@ public class WorkItem extends AppCompatActivity implements OnClickListener, Runn
 				mydialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 					public void onDismiss(DialogInterface dialogInterface) {
 						subscription.unsubscribe();
+						mydialog.dismiss();
 					}
 				});
 				break;
